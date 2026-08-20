@@ -1,4 +1,4 @@
-import { Main } from "../screen/index";
+import { Main } from "../screen/main/main";
 
 export default function Home() {
   return (
