@@ -1,4 +1,4 @@
-import { Main } from '../screen/main/Main'
+import { Main } from './main/Main'
 
 export {
     Main
