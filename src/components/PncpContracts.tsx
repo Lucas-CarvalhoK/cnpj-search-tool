@@ -53,11 +53,11 @@ export function PncpContracts({
   }
 
   return (
-    <div className="space-y-4 p-5 sm:p-6">
+    <div className="space-y-4 sm:p-6 md:p-0">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            Contratos encontrados
+            Contratos encontradoss
           </h2>
 
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
