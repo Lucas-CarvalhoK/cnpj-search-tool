@@ -71,7 +71,7 @@ export function CnpjForm({
       <button
         type="submit"
         disabled={loading}
-        className="mt-7 inline-flex h-[52px] items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-7 inline-flex h-[52px] items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 font-semibold text-white transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 hover: cursor-pointer"
       >
         {loading ? (
           <>

@@ -56,6 +56,11 @@ export function CompanySummary({
     establishment?.situacao_cadastral ??
     "Não informado";
 
+  const fantasyName =
+    typeof establishment?.nome_fantasia === "string"
+      ? establishment.nome_fantasia
+      : "Nome fantasia não informado";
+
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950">
       <div className="border-b border-slate-200 bg-gradient-to-r from-blue-600/10 via-blue-500/5 to-transparent p-6 dark:border-slate-800">
@@ -77,8 +82,7 @@ export function CompanySummary({
             </h2>
 
             <p className="mt-2 text-slate-500">
-              {data.nome_fantasia ??
-                "Nome fantasia não informado"}
+             Nome Fantasia: {fantasyName}
             </p>
           </div>
 

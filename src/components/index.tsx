@@ -9,6 +9,8 @@ import { ResultSkeleton } from "./ResultSkeleton";
 import { ThemeToggle } from "./ThemeToggle";
 import { Tabs } from "./Tabs/Tabs"
 import { ContractCard } from "./ContractCard/ContractCard";
+import { PartnerCard } from "./Company/PartnerCard";
+import { StateRegistrationCard } from "./Company/StateRegistrationCard";
 
 export {
     CnpjForm,
@@ -21,5 +23,7 @@ export {
     ResultSkeleton,
     ThemeToggle,
     Tabs,
-    ContractCard
+    ContractCard,
+    PartnerCard,
+    StateRegistrationCard
 }
