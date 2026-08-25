@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 interface StateRegistrationProps {
-  inscricao_estadual?: string | number;
+  inscricao_estadual?: string;
   ativo?: boolean;
   estado?: {
     nome?: string;
@@ -10,7 +10,7 @@ interface StateRegistrationProps {
 }
 
 export interface RegistrationProps {
-  inscricao_estadual: number;
+  inscricao_estadual?: string;
   stateRegistration?: StateRegistrationProps;
 }
 

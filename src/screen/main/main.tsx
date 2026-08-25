@@ -15,11 +15,11 @@ import {
   JsonViewer,
   ThemeToggle,
   ResultSkeleton,
-  Tabs,
-  PartnerCard
+  Tabs
 } from "@/src/components/index"
-import { StateRegistrationCard, RegistrationProps } from "@/src/components/Company/StateRegistrationCard";
-import { CnaeCard, CnaeCardProps } from "@/src/components/Company/CnaeCard";
+import { PartnerCard, type PartnerProps } from "@/src/components/Company/PartnerCard";
+import { StateRegistrationCard } from "@/src/components/Company/StateRegistrationCard";
+import { CnaeCard } from "@/src/components/Company/CnaeCard";
 import { getPartners, getStateRegistrations, getSecondaryActivities } from "@/src/utils/normalizers/companyData";
 import { DataSection } from "@/src/components/DataSection/DataSection";
 
@@ -190,17 +190,14 @@ export function Main() {
                           <DataSection
                             title="Quadro societário"
                             description={`${partners.length} ${partners.length === 1
-                                ? "sócio encontrado"
-                                : "sócios encontrados"
+                              ? "sócio encontrado"
+                              : "sócios encontrados"
                               }`}
                           >
                             <div className="grid gap-4 lg:grid-cols-2">
                               {partners.map((partner, index) => (
                                 <PartnerCard
-                                  key={
-                                    partner.cpf_cnpj_socio ??
-                                    `${partner.nome_socio}-${index}`
-                                  }
+                                  key={index}
                                   partner={partner}
                                 />
                               ))}
@@ -213,8 +210,8 @@ export function Main() {
                           <DataSection
                             title="Inscrições estaduais"
                             description={`${stateRegistrations.length} ${stateRegistrations.length === 1
-                                ? "registro encontrado"
-                                : "registros encontrados"
+                              ? "registro encontrado"
+                              : "registros encontrados"
                               }`}
                           >
                             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -222,7 +219,6 @@ export function Main() {
                                 (registration, index) => (
                                   <StateRegistrationCard
                                     key={
-                                      registration.inscricao_estadual ??
                                       index
                                     }
                                     stateRegistration={registration}
@@ -238,8 +234,8 @@ export function Main() {
                           <DataSection
                             title="Atividades econômicas secundárias"
                             description={`${secondaryActivities.length} ${secondaryActivities.length === 1
-                                ? "atividade encontrada"
-                                : "atividades encontradas"
+                              ? "atividade encontrada"
+                              : "atividades encontradas"
                               }`}
                           >
                             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -247,7 +243,6 @@ export function Main() {
                                 (activity, index) => (
                                   <CnaeCard
                                     key={
-                                      activity.id ??
                                       activity.codigo ??
                                       index
                                     }

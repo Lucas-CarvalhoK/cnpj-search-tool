@@ -1,24 +1,23 @@
-interface CnaeData {
-    id: string;
-    secao: string;
-    divisao: string;
-    grupo: string;
-    classe: string;
-    subclasse: string;
-    descricao: string;
+export interface CnaeData {
+  codigo?: string | number;
+  descricao?: string;
+
+  secao?: string;
+  divisao?: string;
+  grupo?: string;
+  classe?: string;
+  subclasse?: string;
 }
 
 export interface CnaeCardProps {
-    id: any;
-    codigo: any;
-    cnae?: CnaeData;
+  cnae: CnaeData;
 }
 
 export function CnaeCard({ cnae }: CnaeCardProps) {
     if (!cnae) return null;
 
     const {
-        id,
+  
         secao,
         divisao,
         grupo,
@@ -30,7 +29,6 @@ export function CnaeCard({ cnae }: CnaeCardProps) {
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-slate-950">
             <div className="grid grid-cols-1 gap-4 p-4">
-                {/* Cabeçalho com o Código da Subclasse e Badge do ID */}
                 <div className="flex flex-row items-center justify-between">
                     <span className="flex flex-col">
                         <strong className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -40,15 +38,6 @@ export function CnaeCard({ cnae }: CnaeCardProps) {
                             {subclasse}
                         </span>
                     </span>
-
-                    <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-2">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                            ID
-                        </p>
-                        <p className="font-bold text-blue-700 dark:text-blue-300">
-                            {id}
-                        </p>
-                    </div>
                 </div>
 
                 <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-900/50">

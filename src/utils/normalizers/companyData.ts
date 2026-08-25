@@ -1,22 +1,21 @@
-import type { PartnerCardProps } from "@/src/components/Company/PartnerCard";
+import type { PartnerProps } from "@/src/components/Company/PartnerCard";
 import type { RegistrationProps } from "@/src/components/Company/StateRegistrationCard";
-import type { CnaeCardProps } from "@/src/components/Company/CnaeCard";
+import type { CnaeData } from "@/src/components/Company/CnaeCard";
 
 export function getPartners(
   socios: unknown
-): PartnerCardProps[] {
+): PartnerProps[] {
   if (!Array.isArray(socios)) {
     return [];
   }
 
   return socios.filter(
-    (socio): socio is PartnerCardProps =>
+    (socio): socio is PartnerProps =>
       typeof socio === "object" &&
       socio !== null &&
       !Array.isArray(socio)
   );
 }
-
 export function getStateRegistrations(
   registrations: unknown
 ): RegistrationProps[] {
@@ -34,13 +33,13 @@ export function getStateRegistrations(
 
 export function getSecondaryActivities(
   activities: unknown
-): CnaeCardProps[] {
+): CnaeData[] {
   if (!Array.isArray(activities)) {
     return [];
   }
 
   return activities.filter(
-    (activity): activity is CnaeCardProps =>
+    (activity): activity is CnaeData =>
       typeof activity === "object" &&
       activity !== null &&
       !Array.isArray(activity)
