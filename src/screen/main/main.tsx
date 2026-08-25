@@ -17,6 +17,11 @@ import {
   ResultSkeleton,
   Tabs
 } from "@/src/components/index"
+import { PartnerCard, type PartnerProps } from "@/src/components/Company/PartnerCard";
+import { StateRegistrationCard } from "@/src/components/Company/StateRegistrationCard";
+import { CnaeCard } from "@/src/components/Company/CnaeCard";
+import { getPartners, getStateRegistrations, getSecondaryActivities } from "@/src/utils/normalizers/companyData";
+import { DataSection } from "@/src/components/DataSection/DataSection";
 
 export function Main() {
   const {
@@ -69,6 +74,18 @@ export function Main() {
   const fieldCount = data
     ? countFilledFields(data)
     : 0;
+
+  const partners = getPartners(data?.socios);
+
+  const stateRegistrations =
+    getStateRegistrations(
+      data?.estabelecimento?.inscricoes_estaduais
+    );
+
+  const secondaryActivities =
+    getSecondaryActivities(
+      data?.estabelecimento?.atividades_secundarias
+    );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white">
@@ -163,17 +180,102 @@ export function Main() {
                     label: "Resumo",
                     content: (
                       <section className="space-y-6 pt-6">
-                        <CompanySummary data={data} fieldCount={0} />
-                        <div className="p-6 border rounded-2xl border-slate-200 dark:border-slate-800">
+                        <CompanySummary
+                          data={data}
+                          fieldCount={fieldCount}
+                        />
+
+                        {/* Sócios */}
+                        {partners.length > 0 && (
+                          <DataSection
+                            title="Quadro societário"
+                            description={`${partners.length} ${partners.length === 1
+                              ? "sócio encontrado"
+                              : "sócios encontrados"
+                              }`}
+                          >
+                            <div className="grid gap-4 lg:grid-cols-2">
+                              {partners.map((partner, index) => (
+                                <PartnerCard
+                                  key={index}
+                                  partner={partner}
+                                />
+                              ))}
+                            </div>
+                          </DataSection>
+                        )}
+
+                        {/* Inscrições estaduais */}
+                        {stateRegistrations.length > 0 && (
+                          <DataSection
+                            title="Inscrições estaduais"
+                            description={`${stateRegistrations.length} ${stateRegistrations.length === 1
+                              ? "registro encontrado"
+                              : "registros encontrados"
+                              }`}
+                          >
+                            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                              {stateRegistrations.map(
+                                (registration, index) => (
+                                  <StateRegistrationCard
+                                    key={
+                                      index
+                                    }
+                                    stateRegistration={registration}
+                                  />
+                                )
+                              )}
+                            </div>
+                          </DataSection>
+                        )}
+
+                        {/* CNAEs */}
+                        {secondaryActivities.length > 0 && (
+                          <DataSection
+                            title="Atividades econômicas secundárias"
+                            description={`${secondaryActivities.length} ${secondaryActivities.length === 1
+                              ? "atividade encontrada"
+                              : "atividades encontradas"
+                              }`}
+                          >
+                            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                              {secondaryActivities.map(
+                                (activity, index) => (
+                                  <CnaeCard
+                                    key={
+                                      activity.codigo ??
+                                      index
+                                    }
+                                    cnae={activity}
+                                  />
+                                )
+                              )}
+                            </div>
+                          </DataSection>
+                        )}
+
+                        {/* Dados completos */}
+                        <DataSection
+                          title="Dados completos"
+                          description="Visualização completa dos dados retornados pela API."
+                        >
                           <RecursiveDataViewer
                             data={data}
                             label={null}
                           />
-                        </div>
-                        <JsonViewer data={data} />
+                        </DataSection>
+
+                        {/* JSON */}
+                        <DataSection
+                          title="JSON bruto"
+                          description="Resposta original retornada pela API."
+                        >
+                          <JsonViewer data={data} />
+                        </DataSection>
                       </section>
-                    )
+                    ),
                   },
+
                   {
                     id: "contratos",
                     label: "Contratos PNCP",
@@ -185,7 +287,7 @@ export function Main() {
                           error={pncpError}
                         />
                       </div>
-                    )
+                    ),
                   },
                 ]}
               />
