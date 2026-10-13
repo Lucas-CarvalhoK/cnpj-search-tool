@@ -107,36 +107,6 @@ export function CnpjForm({
           </p>
         )}
       </div>
-
-      {/* Segunda linha: filtros de status */}
-      <fieldset
-        disabled={loading}
-        className="flex flex-col gap-3"
-      >
-        <legend className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-          Status dos contratos
-        </legend>
-
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          {options.map((option) => (
-            <label
-              key={option.value}
-              className="flex cursor-pointer items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
-            >
-              <input
-                type="radio"
-                name="contractStatus"
-                value={option.value}
-                checked={status === option.value}
-                onChange={() => setStatus(option.value)}
-                className="h-4 w-4 accent-blue-600"
-              />
-
-              {option.label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
     </form>
   );
 }

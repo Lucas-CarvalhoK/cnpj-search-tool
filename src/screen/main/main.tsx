@@ -31,6 +31,11 @@ export function Main() {
     pncpData,
     pncpError,
     pncpLoading,
+    pncpPage,
+    pncpTotalPages,
+    pncpStatus,
+    setPncpPage,
+    changePncpStatus,
     queryCnpj,
   } = useCnpjQuery();
 
@@ -285,10 +290,15 @@ export function Main() {
                           data={pncpData}
                           loading={pncpLoading}
                           error={pncpError}
+                          page={pncpPage}
+                          totalPages={pncpTotalPages}
+                          onPageChange={setPncpPage}
+                          status={pncpStatus}
+                          onStatusChange={changePncpStatus}
                         />
                       </div>
                     ),
-                  },
+                  }
                 ]}
               />
             </div>

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/pagination";
 
 import type { JsonValue } from "@/src/types/json";
+import { PncpContractStatus } from "../services/pncp.service";
 
 interface PncpContractsProps {
   data: JsonValue | null;
@@ -21,7 +22,19 @@ interface PncpContractsProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+
+  status: PncpContractStatus;
+  onStatusChange: (status: PncpContractStatus) => void;
 }
+
+const options: {
+  label: string;
+  value: PncpContractStatus;
+}[] = [
+    { label: "Todos os contratos", value: "todos" },
+    { label: "Vigentes", value: "vigente" },
+    { label: "Não vigentes", value: "nao_vigente" },
+  ];
 
 export function PncpContracts({
   data,
@@ -30,6 +43,8 @@ export function PncpContracts({
   page,
   totalPages,
   onPageChange,
+  status,
+  onStatusChange,
 }: PncpContractsProps) {
   const contracts = extractPncpContracts(data);
 
@@ -45,15 +60,35 @@ export function PncpContracts({
     }
   );
 
-  if (loading) {
-    return (
-      <div className="space-y-4 p-5 sm:p-6">
+  <div className="space-y-4">
+    {loading ? (
+      <>
         <ContractSkeleton />
         <ContractSkeleton />
         <ContractSkeleton />
+      </>
+    ) : error ? (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-400">
+        {error}
       </div>
-    );
-  }
+    ) : contracts.length === 0 ? (
+      <div className="p-8 text-center">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white">
+          Nenhum contrato encontrado
+        </h3>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          Não foram encontrados contratos para este CNPJ com o filtro selecionado.
+        </p>
+      </div>
+    ) : (
+      contracts.map((contract) => (
+        <ContractCard
+          key={contract.id}
+          {...contract}
+        />
+      ))
+    )}
+  </div>
 
   if (error) {
     return (
@@ -81,17 +116,50 @@ export function PncpContracts({
 
   return (
     <div className="space-y-6 sm:p-6 md:p-0">
-      <div>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-          Contratos encontrados
-        </h2>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+            Contratos encontrados
+          </h2>
 
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {contracts.length}{" "}
-          {contracts.length === 1
-            ? "contrato nesta página"
-            : "contratos nesta página"}
-        </p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {contracts.length}{" "}
+            {contracts.length === 1
+              ? "contrato nesta página"
+              : "contratos nesta página"}
+          </p>
+        </div>
+
+
+        {/* Segunda linha: filtros de status */}
+        <fieldset
+          disabled={loading}
+          className="flex flex-col gap-x-3"
+        >
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+            Status dos contratos
+          </h2>
+
+          <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-3">
+            {options.map((option) => (
+              <label
+                key={option.value}
+                className="flex cursor-pointer items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
+              >
+                <input
+                  type="radio"
+                  name="contractStatus"
+                  value={option.value}
+                  checked={status === option.value}
+                  onChange={() => onStatusChange(option.value)}
+                  className="h-4 w-4 accent-blue-600"
+                />
+
+                {option.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
       </div>
 
       <div className="space-y-4">
@@ -103,7 +171,7 @@ export function PncpContracts({
         ))}
       </div>
 
-      {totalPages > 1 && (
+      {!loading && !error && totalPages > 1 && (
         <Pagination className="pt-4">
           <PaginationContent>
             <PaginationItem>

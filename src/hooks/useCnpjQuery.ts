@@ -75,6 +75,11 @@ export function useCnpjQuery() {
 
   const pncpRequestIdRef = useRef(0);
 
+  function changePncpStatus(status: PncpContractStatus) {
+    setPncpPage(1);
+    setSearchedStatus(status);
+  }
+
   async function queryCnpj(
     cnpj: string,
     status: PncpContractStatus = "todos"
@@ -228,6 +233,7 @@ export function useCnpjQuery() {
   }, [searchedCnpj, searchedStatus, pncpPage]);
 
   useEffect(() => {
+
     return () => {
       cnpjControllerRef.current?.abort();
       pncpControllerRef.current?.abort();
@@ -243,7 +249,9 @@ export function useCnpjQuery() {
     pncpLoading,
     pncpPage,
     pncpTotalPages,
+    pncpStatus: searchedStatus,
     setPncpPage,
+    changePncpStatus,
     queryCnpj,
   };
 }
