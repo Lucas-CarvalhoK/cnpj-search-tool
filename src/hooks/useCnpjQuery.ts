@@ -176,7 +176,6 @@ export function useCnpjQuery() {
     async function loadPncpContracts() {
       setPncpLoading(true);
       setPncpError("");
-      setPncpData(null);
 
       try {
         const result = await fetchPncpContracts(

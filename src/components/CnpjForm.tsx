@@ -8,22 +8,11 @@ import { formatCnpj, onlyDigits } from "@/src/utils/formatters";
 import type { CnpjFormProps } from "../types/cnpj";
 import type { PncpContractStatus } from "../services/pncp.service";
 
-const options: {
-  label: string;
-  value: PncpContractStatus;
-}[] = [
-    { label: "Todos os contratos", value: "todos" },
-    { label: "Vigentes", value: "vigente" },
-    { label: "Não vigentes", value: "nao_vigente" },
-  ];
-
 export function CnpjForm({
   onSearch,
   loading,
 }: CnpjFormProps) {
   const [cnpj, setCnpj] = useState<string>("");
-  const [status, setStatus] =
-    useState<PncpContractStatus>("todos");
   const [validationError, setValidationError] =
     useState<string>("");
 

@@ -1,6 +1,10 @@
 
 import { ContractCard } from "./index";
 import { extractPncpContracts } from "@/src/utils/pncp";
+import type { JsonValue } from "@/src/types/json";
+import type { PncpContractStatus } from "../services/pncp.service";
+
+import { LoaderCircle } from "lucide-react";
 
 import {
   Pagination,
@@ -12,9 +16,6 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 
-import type { JsonValue } from "@/src/types/json";
-import { PncpContractStatus } from "../services/pncp.service";
-
 interface PncpContractsProps {
   data: JsonValue | null;
   loading: boolean;
@@ -22,7 +23,6 @@ interface PncpContractsProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-
   status: PncpContractStatus;
   onStatusChange: (status: PncpContractStatus) => void;
 }
@@ -48,6 +48,16 @@ export function PncpContracts({
 }: PncpContractsProps) {
   const contracts = extractPncpContracts(data);
 
+  const rawTotal =
+    data && typeof data === "object" && !Array.isArray(data)
+      ? Number(data.total ?? 0)
+      : 0;
+
+  const totalContracts =
+    Number.isFinite(rawTotal) && rawTotal >= 0
+      ? rawTotal
+      : 0;
+
   const visiblePages = Array.from(
     { length: Math.min(5, totalPages) },
     (_, index) => {
@@ -60,85 +70,30 @@ export function PncpContracts({
     }
   );
 
-  <div className="space-y-4">
-    {loading ? (
-      <>
-        <ContractSkeleton />
-        <ContractSkeleton />
-        <ContractSkeleton />
-      </>
-    ) : error ? (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-400">
-        {error}
-      </div>
-    ) : contracts.length === 0 ? (
-      <div className="p-8 text-center">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white">
-          Nenhum contrato encontrado
-        </h3>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          Não foram encontrados contratos para este CNPJ com o filtro selecionado.
-        </p>
-      </div>
-    ) : (
-      contracts.map((contract) => (
-        <ContractCard
-          key={contract.id}
-          {...contract}
-        />
-      ))
-    )}
-  </div>
-
-  if (error) {
-    return (
-      <div className="p-5 sm:p-6">
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-400">
-          {error}
-        </div>
-      </div>
-    );
-  }
-
-  if (!data || contracts.length === 0) {
-    return (
-      <div className="p-8 text-center">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white">
-          Nenhum contrato encontrado
-        </h3>
-
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          Não foram encontrados contratos para este CNPJ.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 sm:p-6 md:p-0">
-      <div className="flex items-center justify-between">
+      {/* Cabeçalho e filtros */}
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Contratos encontrados
           </h2>
 
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {contracts.length}{" "}
-            {contracts.length === 1
-              ? "contrato nesta página"
-              : "contratos nesta página"}
+            {totalContracts.toLocaleString("pt-BR")}{" "}
+            {totalContracts === 1
+              ? "contrato encontrado"
+              : "contratos encontrados"}
           </p>
         </div>
 
-
-        {/* Segunda linha: filtros de status */}
         <fieldset
           disabled={loading}
-          className="flex flex-col gap-x-3"
+          className="flex flex-col gap-x-3 disabled:opacity-60"
         >
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+          <legend className="text-lg font-bold text-slate-900 dark:text-white">
             Status dos contratos
-          </h2>
+          </legend>
 
           <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-3">
             {options.map((option) => (
@@ -162,87 +117,169 @@ export function PncpContracts({
         </fieldset>
       </div>
 
-      <div className="space-y-4">
-        {contracts.map((contract) => (
-          <ContractCard
-            key={contract.id}
-            {...contract}
-          />
-        ))}
+      {/* Lista de contratos e overlay de loading */}
+      <div
+        className="relative min-h-[300px]"
+        aria-busy={loading}
+      >
+        <div
+          className={`space-y-4 transition-opacity duration-200 ${loading ? "opacity-40" : "opacity-100"
+            }`}
+        >
+          {contracts.length > 0 ? (
+            contracts.map((contract) => (
+              <ContractCard
+                key={contract.id}
+                {...contract}
+              />
+            ))
+          ) : loading ? (
+            <>
+              <ContractSkeleton />
+              <ContractSkeleton />
+              <ContractSkeleton />
+            </>
+          ) : error ? (
+            <div
+              role="alert"
+              className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-400"
+            >
+              {error}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-slate-200 p-8 text-center dark:border-slate-800">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Nenhum contrato encontrado
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                Não foram encontrados contratos para este CNPJ
+                com o filtro selecionado.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Overlay de carregamento */}
+        {loading && (
+          <div className="absolute inset-0 z-10 flex items-start justify-center rounded-xl bg-white/30 pt-24 backdrop-blur-[2px] dark:bg-slate-950/30">
+            <div
+              role="status"
+              aria-live="polite"
+              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+            >
+              <LoaderCircle
+                className="h-5 w-5 animate-spin text-blue-600"
+                aria-hidden="true"
+              />
+
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                Atualizando contratos...
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {!loading && !error && totalPages > 1 && (
-        <Pagination className="pt-4">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                aria-disabled={page === 1}
-                tabIndex={page === 1 ? -1 : 0}
-                className={
-                  page === 1
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-                onClick={(event) => {
-                  event.preventDefault();
-                  if (page > 1) {
-                    onPageChange(page - 1);
-                  }
-                }}
-              />
-            </PaginationItem>
+      {/* Erro com dados anteriores preservados */}
+      {error && contracts.length > 0 && !loading && (
+        <div
+          role="alert"
+          className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-400"
+        >
+          {error}
+        </div>
+      )}
 
-            {visiblePages[0] > 1 && (
+      {/* Paginação */}
+      {!error && totalPages > 1 && (
+        <div
+          className={
+            loading ? "pointer-events-none opacity-50" : ""
+          }
+          aria-busy={loading}
+        >
+          <Pagination className="pt-4">
+            <PaginationContent>
               <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
-
-            {visiblePages.map((pageNumber) => (
-              <PaginationItem key={pageNumber}>
-                <PaginationLink
+                <PaginationPrevious
                   href="#"
-                  isActive={page === pageNumber}
+                  aria-disabled={page === 1 || loading}
+                  tabIndex={page === 1 || loading ? -1 : 0}
+                  className={
+                    page === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
                   onClick={(event) => {
                     event.preventDefault();
-                    onPageChange(pageNumber);
-                  }}
-                >
-                  {pageNumber}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
 
-            {visiblePages[visiblePages.length - 1] <
-              totalPages && (
+                    if (!loading && page > 1) {
+                      onPageChange(page - 1);
+                    }
+                  }}
+                />
+              </PaginationItem>
+
+              {visiblePages[0] > 1 && (
                 <PaginationItem>
                   <PaginationEllipsis />
                 </PaginationItem>
               )}
 
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                aria-disabled={page === totalPages}
-                tabIndex={
-                  page === totalPages ? -1 : 0
-                }
-                className={
-                  page === totalPages
-                    ? "pointer-events-none opacity-50"
-                    : "cursor-pointer"
-                }
-                onClick={(event) => {
-                  event.preventDefault();
-                  if (page < totalPages) {
-                    onPageChange(page + 1);
+              {visiblePages.map((pageNumber) => (
+                <PaginationItem key={pageNumber}>
+                  <PaginationLink
+                    href="#"
+                    isActive={page === pageNumber}
+                    aria-disabled={loading}
+                    tabIndex={loading ? -1 : 0}
+                    onClick={(event) => {
+                      event.preventDefault();
+
+                      if (!loading && page !== pageNumber) {
+                        onPageChange(pageNumber);
+                      }
+                    }}
+                  >
+                    {pageNumber}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              {visiblePages[visiblePages.length - 1] <
+                totalPages && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  aria-disabled={
+                    page === totalPages || loading
                   }
-                }}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+                  tabIndex={
+                    page === totalPages || loading ? -1 : 0
+                  }
+                  className={
+                    page === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                  onClick={(event) => {
+                    event.preventDefault();
+
+                    if (!loading && page < totalPages) {
+                      onPageChange(page + 1);
+                    }
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       )}
     </div>
   );
